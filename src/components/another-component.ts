@@ -3,8 +3,7 @@ export function anotherComponent({ setState, stateFor, elements }: TemplateOptio
 
   const handleInput = (e: Event) => {
     const target = e.currentTarget as HTMLInputElement
-    const currentValue = stateFor("name")
-    setState("name", currentValue + target.value)
+    setState("name", target.value)
   }
 
   return div({}, _ => {

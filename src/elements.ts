@@ -20,12 +20,12 @@ function handleOptions(options: ElementOptions, element: HTMLElement, state: Sta
         element[option] = value
       }
     } else {
-      element.setAttribute(option, value)
+      element.setAttribute(option, typeof value === "function" ? state[value()] : value)
     }
   }
 }
 
-const elements = (elementToInjectInto: HTMLElement, state: State) => {
+const elements = (elementToInjectInto: HTMLElement, state: State, isFirstRegister: boolean) => {
   const obj = {}
   let nesting = 0
   let nestingArr: number[] = []
@@ -45,8 +45,11 @@ const elements = (elementToInjectInto: HTMLElement, state: State) => {
       handleOptions(options, element, state)
       if (nesting > (nestingArr[nestingArr.length - 2] || 0)) {
         nestedEls.push(element)
-        const nodeToAppendTo = lastEl || elementToInjectInto
-        nodeToAppendTo.appendChild(element)
+        if (isFirstRegister) {
+          elementToInjectInto.appendChild(element)
+        } else if (lastEl) {
+          lastEl.appendChild(element)
+        }
         lastEl = element
       } else if (nesting < nestingArr[nestingArr.length - 2]) {
         nestedEls.splice(nesting, nestedEls.length)

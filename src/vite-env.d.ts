@@ -7,7 +7,8 @@ interface TemplateOptions {
   setState: SetState
   getState: GetState
   stateFor: any
-  elements: ElementList
+  elements: ElementList,
+  _: HTMLElement
 }
 
 type Template = ({ setState, getState, stateFor, elements }: TemplateOptions) => HTMLElement

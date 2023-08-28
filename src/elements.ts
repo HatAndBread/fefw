@@ -45,8 +45,8 @@ const elements = (elementToInjectInto: HTMLElement, state: State, isFirstRegiste
       handleOptions(options, element, state)
       if (nesting > (nestingArr[nestingArr.length - 2] || 0)) {
         nestedEls.push(element)
-        if (isFirstRegister) {
-          elementToInjectInto.appendChild(element)
+        if (!lastEl) {
+          // nestedEls[0].appendChild(element)
         } else if (lastEl) {
           lastEl.appendChild(element)
         }

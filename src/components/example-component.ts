@@ -3,7 +3,6 @@ import { use } from "../use";
 
 export function exampleComponent ({ setState, stateFor, elements }: TemplateOptions) {
   const { div, button } = elements;
-  console.log("stuff!")
 
   const handleButtonClick = (e: Event) => {
     const currentValue = stateFor("count");

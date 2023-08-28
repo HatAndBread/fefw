@@ -20,7 +20,7 @@ function _use(elementToInjectInto: HTMLElement, template: Template, initialState
   }
   const rootEl = template({
     _: elementToInjectInto,
-    elements: elements(elementToInjectInto, state, isFirstRegister),
+    elements: elements(state),
     setState,
     getState,
     stateFor,

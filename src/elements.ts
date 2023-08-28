@@ -25,7 +25,7 @@ function handleOptions(options: ElementOptions, element: HTMLElement, state: Sta
   }
 }
 
-const elements = (elementToInjectInto: HTMLElement, state: State, isFirstRegister: boolean) => {
+const elements = (state: State) => {
   const obj = {}
   let nesting = 0
   let nestingArr: number[] = []
@@ -45,11 +45,7 @@ const elements = (elementToInjectInto: HTMLElement, state: State, isFirstRegiste
       handleOptions(options, element, state)
       if (nesting > (nestingArr[nestingArr.length - 2] || 0)) {
         nestedEls.push(element)
-        if (!lastEl) {
-          // nestedEls[0].appendChild(element)
-        } else if (lastEl) {
-          lastEl.appendChild(element)
-        }
+        if (lastEl) lastEl.appendChild(element)
         lastEl = element
       } else if (nesting < nestingArr[nestingArr.length - 2]) {
         nestedEls.splice(nesting, nestedEls.length)

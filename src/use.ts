@@ -1,5 +1,9 @@
 import { DiffDOM } from "diff-dom";
-import { ensureComponentId, getComponentIdDataSetName, getIdForComponent, setIdForComponent, regenerateComponent } from "./register";
+import {
+  ensureComponentId,
+  getComponentIdDataSetName,
+  regenerateComponent,
+} from "./register";
 import { getStateForComponent, setStateForComponent } from "./state";
 import { elements } from "./elements";
 
@@ -17,6 +21,7 @@ function _use(
     return getStateForComponent(rootEl)[key];
   };
   const regenerateState = (newState: State) => {
+    // Todo: Only diff current component, not children
     newState ||= state;
     const dd = new DiffDOM({
       preDiffApply: (info) => {
@@ -28,11 +33,6 @@ function _use(
         }
         return false;
       },
-      // textDiff: (node, currentValue, expectedValue, newValue) => {
-      //   console.log(node, currentValue, expectedValue, newValue)
-      //   node.data = newValue
-      //   return true;
-      // }
     });
     const newRootEl = _use(
       elementToInjectInto,
@@ -43,21 +43,18 @@ function _use(
     );
     const diff = dd.diff(rootEl, newRootEl);
     const wasAbleToApplyDiff = dd.apply(rootEl, diff);
-    if (wasAbleToApplyDiff) {
-    }
     if (!wasAbleToApplyDiff) {
       ensureComponentId(rootEl, newRootEl);
       elementToInjectInto.replaceChild(rootEl, newRootEl);
     }
-  }
+  };
 
-
-  const setState:SetState = (s: string, value: any) => {
+  const setState: SetState = (s: string, value: any) => {
     const newState = setStateForComponent(rootEl, s, value);
-    regenerateState(newState)
+    regenerateState(newState);
     rootEl.querySelectorAll(`[${getComponentIdDataSetName()}]`).forEach((e) => {
-      regenerateComponent(e as HTMLElement)
-    })
+      regenerateComponent(e as HTMLElement);
+    });
   };
 
   const rootEl = template({

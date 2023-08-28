@@ -10,7 +10,7 @@ export function exampleComponent ({ setState, stateFor, elements }: TemplateOpti
   };
 
   return div(
-    { text: "I am a component", class: "bg-yellow", "data-stuff": "hello" },
+    { text: "I am a component", class: "bg-yellow" },
     _ => {
       button({ text: ()=>"count", onclick: handleButtonClick });
       use(_, anotherComponent, {name: "fred"})

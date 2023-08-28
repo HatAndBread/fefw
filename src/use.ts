@@ -3,9 +3,23 @@ import {
   ensureComponentId,
   getComponentIdDataSetName,
   regenerateComponent,
+  cleanUpRegisteredComponents,
+  getChildComponents
 } from "./register";
 import { getStateForComponent, setStateForComponent } from "./state";
 import { elements } from "./elements";
+
+const dd = new DiffDOM({
+  preDiffApply: (info) => {
+    if (
+      info.diff.action === "modifyAttribute" &&
+      info.diff.name === getComponentIdDataSetName()
+    ) {
+      return true;
+    }
+    return false;
+  },
+});
 
 function _use(
   elementToInjectInto: HTMLElement,
@@ -23,17 +37,6 @@ function _use(
   const regenerateState = (newState: State) => {
     // Todo: Only diff current component, not children
     newState ||= state;
-    const dd = new DiffDOM({
-      preDiffApply: (info) => {
-        if (
-          info.diff.action === "modifyAttribute" &&
-          info.diff.name === getComponentIdDataSetName()
-        ) {
-          return true;
-        }
-        return false;
-      },
-    });
     const newRootEl = _use(
       elementToInjectInto,
       template,
@@ -47,12 +50,16 @@ function _use(
       ensureComponentId(rootEl, newRootEl);
       elementToInjectInto.replaceChild(rootEl, newRootEl);
     }
+    if (shouldRenderEl) {
+      // This is the end of the process for components that get mounted
+      cleanUpRegisteredComponents()
+    }
   };
 
   const setState: SetState = (s: string, value: any) => {
     const newState = setStateForComponent(rootEl, s, value);
     regenerateState(newState);
-    rootEl.querySelectorAll(`[${getComponentIdDataSetName()}]`).forEach((e) => {
+    getChildComponents(rootEl).forEach((e) => {
       regenerateComponent(e as HTMLElement);
     });
   };

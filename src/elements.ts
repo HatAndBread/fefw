@@ -1,80 +1,116 @@
-import { allHtmlElements } from "./all-html-elements"
-import { allListeners } from "./all-listeners"
+import { allHtmlElements } from "./all-html-elements";
+import { allListeners } from "./all-listeners";
 import { register, ensureComponentId } from "./register";
 import { getStateForComponentWithoutError } from "./state";
 
-function handleOptions(options: ElementOptions, element: HTMLElement, state: State) {
-  getStateForComponentWithoutError(element)
-  const keys = Object.keys(options)
+function handleOptions(
+  options: ElementOptions,
+  element: HTMLElement,
+  state: State
+) {
+  getStateForComponentWithoutError(element);
+  const keys = Object.keys(options);
   for (let i = 0; i < keys.length; i++) {
-    const option = keys[i]
-    const value = options[option]
+    const option = keys[i];
+    const value = options[option];
     if (option === "text") {
       if (typeof value === "function") {
-        element.innerText = state[value()]
+        element.innerText = state[value()];
+      } else if (Array.isArray(value)) {
+        const variable = value[0];
+        const func = value[1];
+        if (typeof variable !== "string" || typeof func !== "function") {
+          throw new Error(
+            `Expected ${option} to be an array [string, () => {}] but was ${JSON.stringify(
+              value
+            )}`
+          );
+        }
+        element.innerText = func(state[variable]);
+      } else if (Object.getPrototypeOf(value) === Object.prototype) {
+        const keys = Object.keys(value);
+        const variable = keys[0]
+        const func = value[variable];
+        if (keys.length > 1 || typeof func !== "function") {
+          throw new Error(
+            `Expected ${option} to be: {key: () => {} but was ${JSON.stringify(
+              value
+            )}}`
+          );
+        }
+        element.innerText = func(state[variable]);
       } else {
-        element.innerText = value
+        element.innerText = value;
       }
     } else if (allListeners.includes(option)) {
       if (typeof value !== "function") {
-        throw new Error(`Expected listener ${option} to be function but was: ${typeof value}`)
+        throw new Error(
+          `Expected listener ${option} to be function but was: ${typeof value}`
+        );
       } else {
         //@ts-ignore
-        element[option] = value
+        element[option] = value;
       }
     } else {
-      element.setAttribute(option, typeof value === "function" ? state[value()] : value)
+      element.setAttribute(
+        option,
+        typeof value === "function" ? state[value()] : value
+      );
     }
   }
 }
 
-const elements = (state: State, oldRoot: undefined | HTMLElement, regenerate: any) => {
-  const obj = {}
-  let nesting = 0
-  let nestingArr: number[] = []
-  let nestedEls: HTMLElement[] = []
-  let lastEl: HTMLElement
-  allHtmlElements().forEach(el => {
+const elements = (
+  state: State,
+  oldRoot: undefined | HTMLElement,
+  regenerate: any
+) => {
+  const obj = {};
+  let nesting = 0;
+  let nestingArr: number[] = [];
+  let nestedEls: HTMLElement[] = [];
+  let lastEl: HTMLElement;
+  allHtmlElements().forEach((el) => {
     //@ts-ignore
     obj[el] = (options, callback) => {
       if (callback && typeof callback !== "function") {
         throw new Error(
           `Expected callback for ${el} to be a function, but its type was: ${typeof callback}`
-        )
+        );
       }
-      if (callback) nesting += 1
-      nestingArr.push(nesting)
-      const element = document.createElement(el)
+      if (callback) nesting += 1;
+      nestingArr.push(nesting);
+      const element = document.createElement(el);
       if (nesting > (nestingArr[nestingArr.length - 2] || 0)) {
-        nestedEls.push(element)
+        nestedEls.push(element);
         if (lastEl) {
-          lastEl.appendChild(element)
+          lastEl.appendChild(element);
         } else {
           if (oldRoot) {
-          // Add ID to already existing components
-            ensureComponentId(oldRoot, element)
+            // Add ID to already existing components
+            ensureComponentId(oldRoot, element);
           } else {
-          // Set id for new components
-            register(element, state, regenerate)
+            // Set id for new components
+            register(element, state, regenerate);
           }
         }
-        lastEl = element
+        lastEl = element;
       } else if (nesting < nestingArr[nestingArr.length - 2]) {
-        nestedEls.splice(nesting, nestedEls.length)
-        lastEl = nestedEls[nestedEls.length - 1]
-        lastEl.appendChild(element)
+        nestedEls.splice(nesting, nestedEls.length);
+        lastEl = nestedEls[nestedEls.length - 1];
+        lastEl.appendChild(element);
       } else {
-        lastEl.appendChild(element)
+        lastEl.appendChild(element);
       }
-      handleOptions(options, element, state)
+      handleOptions(options, element, state);
       if (typeof callback === "function") {
-        callback(element)
-        nesting -= 1
+        callback(element);
+        nesting -= 1;
       }
-      return element
-    }
-  })
-  return obj as ElementList
-}
+      return element;
+    };
+  });
+  return obj as ElementList;
+};
 
-export { elements }
+export { elements };

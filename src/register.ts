@@ -57,4 +57,19 @@ function register(rootElement: HTMLElement, state: State, regenerate: any) {
   return _registeredComponents[id].timesRendered === 1
 }
 
-export {register, registeredComponents, getComponentIdDataSetName, getIdForComponent, setIdForComponent, ensureComponentId, getStateById, regenerateComponent}
+function getChildComponents(el: HTMLElement) {
+  return el.querySelectorAll(`[${getComponentIdDataSetName()}]`)
+}
+
+function cleanUpRegisteredComponents() {
+  const validIds = Array.from(getChildComponents(document.body)).map((el) => getIdForComponent(el as HTMLElement))
+  const registerKeys = Object.keys(_registeredComponents)
+  for (let i = 0; i < registerKeys.length; i++) {
+    const key = registerKeys[i];
+    if (!validIds.includes(key)) {
+      delete _registeredComponents[key]
+    }
+  }
+}
+
+export {register, registeredComponents, getComponentIdDataSetName, getIdForComponent, setIdForComponent, ensureComponentId, getStateById, regenerateComponent, getChildComponents, cleanUpRegisteredComponents}

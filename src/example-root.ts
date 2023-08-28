@@ -18,8 +18,9 @@ function template({ _, setState, stateFor, elements }: TemplateOptions) {
       div({ text: "hello2" }, _ => {
         div({ text: "hello3" })
         div({ text: "hello4" })
+        div({ text: "hello4" })
         div({ text: "hello5" }, _ => {
-          div({ text: () => "count" })
+          div({ text: {count: (count: string) => `The count is ${count}`}})
           button({ text: "I am a button", onclick: handleButtonClick })
         })
         ;[1, 2, 3, 4, 5].forEach(n => {

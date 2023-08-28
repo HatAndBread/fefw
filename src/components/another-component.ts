@@ -1,7 +1,4 @@
-export function anotherComponent({
-  setState,
-  elements,
-}: TemplateOptions) {
+export function anotherComponent({ setState, elements }: TemplateOptions) {
   const { div, input, p, form } = elements;
 
   const handleInput = (e: Event) => {
@@ -9,11 +6,11 @@ export function anotherComponent({
     setState("name", target.value);
   };
 
-  return div({}, (_) => {
-    form({}, (_) => {
+  return div({}, _ => {
+    form({}, _ => {
       input(
         { text: "I am a component", oninput: handleInput, value: () => "name" },
-        (_) => setTimeout(()=> _.focus())
+        _ => setTimeout(() => _.focus())
       );
       p({ text: () => "name" });
     });

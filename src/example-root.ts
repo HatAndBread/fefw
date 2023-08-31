@@ -5,10 +5,10 @@ const app = document.getElementById("app") as HTMLElement;
 
 use(app, template, { count: 0 });
 
-function template({ _, setState, stateFor, elements }: TemplateOptions) {
+function template({ _, setState, stateFor, elements, onmount }: TemplateOptions) {
   const { div, button } = elements;
 
-  const handleButtonClick = (e: Event) => {
+  const handleButtonClick = () => {
     const currentValue = stateFor("count");
     setState("count", currentValue + 1);
   };
@@ -29,7 +29,7 @@ function template({ _, setState, stateFor, elements }: TemplateOptions) {
           }
         });
       });
-      use(_, exampleComponent, { count: 3 });
+      use(_, exampleComponent, { count: 22});
     });
     div({ text: "last" });
   });

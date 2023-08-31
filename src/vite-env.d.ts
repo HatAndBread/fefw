@@ -8,7 +8,8 @@ interface TemplateOptions {
   getState: GetState
   stateFor: any
   elements: ElementList,
-  _: HTMLElement
+  _: HTMLElement,
+  onmount: (f: Function) => void
 }
 
 type Template = ({ setState, getState, stateFor, elements }: TemplateOptions) => HTMLElement

@@ -4,13 +4,13 @@ import {
   getComponentIdDataSetName,
   regenerateComponent,
   cleanUpRegisteredComponents,
-  getChildComponents
+  getChildComponents,
 } from "./register";
 import { getStateForComponent, setStateForComponent } from "./state";
 import { elements } from "./elements";
 
 const dd = new DiffDOM({
-  preDiffApply: (info) => {
+  preDiffApply: info => {
     if (
       info.diff.action === "modifyAttribute" &&
       info.diff.name === getComponentIdDataSetName()
@@ -28,6 +28,14 @@ function _use(
   shouldRenderEl?: boolean,
   oldRoot?: HTMLElement
 ) {
+  const onmountFunctions: Function[] = [];
+  const triggerOnmount = () => {
+    // todo: only push if the next component is the top component.
+    onmountFunctions.forEach(f => f());
+  };
+  const onmount = (f: Function) => {
+    onmountFunctions.push(() => setTimeout(() => f()));
+  };
   const getState = () => {
     return { ...getStateForComponent(rootEl) };
   };
@@ -52,14 +60,14 @@ function _use(
     }
     if (shouldRenderEl) {
       // This is the end of the process for components that get mounted
-      cleanUpRegisteredComponents()
+      cleanUpRegisteredComponents();
     }
   };
 
   const setState: SetState = (s: string, value: any) => {
     const newState = setStateForComponent(rootEl, s, value);
     regenerateState(newState);
-    getChildComponents(rootEl).forEach((e) => {
+    getChildComponents(rootEl).forEach(e => {
       regenerateComponent(e as HTMLElement);
     });
   };
@@ -70,9 +78,11 @@ function _use(
     setState,
     getState,
     stateFor,
+    onmount,
   });
   if (shouldRenderEl) {
     elementToInjectInto.appendChild(rootEl);
+    triggerOnmount()
   }
   return rootEl;
 }

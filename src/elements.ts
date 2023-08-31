@@ -1,14 +1,12 @@
 import { allHtmlElements } from "./all-html-elements";
 import { allListeners } from "./all-listeners";
 import { register, ensureComponentId } from "./register";
-import { getStateForComponentWithoutError } from "./state";
 
 function handleOptions(
   options: ElementOptions,
   element: HTMLElement,
   state: State
 ) {
-  getStateForComponentWithoutError(element);
   const keys = Object.keys(options);
   for (let i = 0; i < keys.length; i++) {
     const option = keys[i];

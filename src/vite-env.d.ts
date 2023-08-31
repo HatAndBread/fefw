@@ -1,11 +1,10 @@
 /// <reference types="vite/client" />
 
 type SetState = (identifier: string, value: any) => void;
-type GetState = (identifier: string) => State;
+type GetState = () => State;
 type StateFor = (identifier: string) => any;
 
 type UseFunction = (
-  elementToInjectInto: ElementWrapper,
   template: Template,
   state: State = {}
 ) => void;

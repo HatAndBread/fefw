@@ -64,8 +64,7 @@ const elements = (
   oldRoot: undefined | HTMLElement,
   regenerate: any,
   appId: string,
-  myUse: UseFunction,
-  template: Template
+  firstRender?: true
 ) => {
   const obj = {};
   let nesting = 0;
@@ -105,7 +104,10 @@ const elements = (
         lastEl.appendChild(element);
       }
       handleOptions(options, element, state);
-      const wrapper = createElementWrapper(element, myUse, appId, template, state);
+      const wrapper = createElementWrapper(
+        element,
+        appId,
+      );
       if (typeof callback === "function") {
         callback(wrapper);
         nesting -= 1;
@@ -118,23 +120,14 @@ const elements = (
 
 const createElementWrapper = (
   el: HTMLElement,
-  use: UseFunction,
   appId: string,
-  template: Template,
-  state: State
 ): ElementWrapper => {
-  function Wrapper (
-    el: HTMLElement,
-    use: UseFunction,
-    appId: string,
-  ) {
-    this.el = el;
-    this.use = useCreator(appId, el);
-    this.appId = appId;
-    this.onmount = (f: Function) => setTimeout(() => f(el))
-  }
-  const wrapper = new Wrapper(el, use, appId);
-  return wrapper;
+  return {
+    el,
+    appId,
+    use: useCreator(appId, el),
+    onmount: (f: Function) => setTimeout(() => f(el)),
+  };
 };
 
 export { elements, createElementWrapper };

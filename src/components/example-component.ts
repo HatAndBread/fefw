@@ -3,7 +3,7 @@ import { anotherComponent } from "./another-component";
 export function exampleComponent({
   setState,
   stateFor,
-  elements,
+  elements
 }: TemplateOptions) {
   const { div, button } = elements;
 
@@ -14,6 +14,6 @@ export function exampleComponent({
 
   return div({ text: "I am a component", class: "bg-yellow" }, _ => {
     button({ text: () => "count", onclick: handleButtonClick });
-    _.use(_, anotherComponent, { name: "fred" });
+    _.use(anotherComponent, { name: "fred" });
   });
 }

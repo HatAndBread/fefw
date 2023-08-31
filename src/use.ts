@@ -7,8 +7,20 @@ import {
   getChildComponents,
 } from "./register";
 import { getStateForComponent, setStateForComponent } from "./state";
-import { elements, createElementWrapper } from "./elements";
+import { elements } from "./elements";
 import { v4 as uid } from "uuid";
+
+const dd = new DiffDOM({
+  preDiffApply: info => {
+    if (
+      info.diff.action === "modifyAttribute" &&
+      info.diff.name === getComponentIdDataSetName()
+    ) {
+      return true;
+    }
+    return false;
+  },
+});
 
 function _use(
   elementToInjectInto: HTMLElement,
@@ -18,29 +30,15 @@ function _use(
   myUse: UseFunction,
   shouldRenderEl?: boolean,
   oldRoot?: HTMLElement,
+  firstRender?: true,
 ) {
-  const ids: string[] = [];
-
-  const dd = new DiffDOM({
-    preDiffApply: info => {
-      if (
-        info.diff.action === "modifyAttribute" &&
-        info.diff.name === getComponentIdDataSetName()
-      ) {
-        if (!ids.includes(info.diff.oldValue)) {
-          ids.push(info.diff.oldValue);
-        }
-        return true;
-      }
-      return false;
-    },
-  });
-
   const getState = () => {
-    return { ...getStateForComponent(rootEl) };
+    if (oldRoot) return { ...getStateForComponent(oldRoot) };
+    return state
   };
   const stateFor = (key: string) => {
-    return getStateForComponent(rootEl)[key];
+    if (oldRoot) return getStateForComponent(oldRoot)[key];
+    return state[key]
   };
   const regenerateState = (newState: State) => {
     // Todo: Only diff current component, not children
@@ -76,7 +74,7 @@ function _use(
 
   const rootEl = template({
     _: elementToInjectInto,
-    elements: elements(state, oldRoot, regenerateState, appId, myUse, template),
+    elements: elements(state, oldRoot, regenerateState, appId, firstRender),
     setState,
     getState,
     stateFor,
@@ -87,13 +85,12 @@ function _use(
   return rootEl;
 }
 
-const useCreator = (appId: string, rootEl: HTMLElement) => {
+const useCreator = (appId: string, el: HTMLElement, firstRender?: true) => {
   return function use(
-    elementToInjectInto: ElementWrapper,
     template: Template,
     state: State = {},
   ) {
-    _use(elementToInjectInto.el, template, state, appId, use, true, undefined);
+    _use(el, template, state, appId, use, true, undefined, firstRender);
   };
 };
 
@@ -103,9 +100,8 @@ function App(
   state: State = {}
 ) {
   const appId = uid()
-  const myUse = useCreator(appId, elementToInjectInto);
-  const appWrapper = createElementWrapper(elementToInjectInto, myUse, appId, template, state)
-  myUse(appWrapper, template, state)
+  const myUse = useCreator(appId, elementToInjectInto, true);
+  myUse(template, state)
 }
 
 export { App, useCreator };

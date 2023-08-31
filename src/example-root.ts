@@ -1,11 +1,11 @@
-import { use } from "./use";
+import { App } from "./use";
 import { exampleComponent } from "./components/example-component";
 
 const app = document.getElementById("app") as HTMLElement;
 
-use(app, template, { count: 0 });
+App(app, ApplicationRoot, { count: 0 });
 
-function template({ _, setState, stateFor, elements }: TemplateOptions) {
+function ApplicationRoot({ _, setState, stateFor, elements }: TemplateOptions) {
   const { div, button } = elements;
 
   const handleButtonClick = () => {
@@ -29,7 +29,7 @@ function template({ _, setState, stateFor, elements }: TemplateOptions) {
           }
         });
       });
-      use(_, exampleComponent, { count: 22});
+      _.use(_, exampleComponent, { count: 22});
     });
     div({ text: "last" });
   });

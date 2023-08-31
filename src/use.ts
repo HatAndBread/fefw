@@ -5,17 +5,19 @@ import {
   regenerateComponent,
   cleanUpRegisteredComponents,
   getChildComponents,
-  getIdForComponent,
 } from "./register";
 import { getStateForComponent, setStateForComponent } from "./state";
-import { elements } from "./elements";
+import { elements, createElementWrapper } from "./elements";
+import { v4 as uid } from "uuid";
 
 function _use(
   elementToInjectInto: HTMLElement,
   template: Template,
   state: State = {},
+  appId: string,
+  myUse: UseFunction,
   shouldRenderEl?: boolean,
-  oldRoot?: HTMLElement
+  oldRoot?: HTMLElement,
 ) {
   const ids: string[] = [];
 
@@ -25,16 +27,14 @@ function _use(
         info.diff.action === "modifyAttribute" &&
         info.diff.name === getComponentIdDataSetName()
       ) {
-        if (!ids.includes(info.diff.oldValue)){
-          ids.push(info.diff.oldValue)
+        if (!ids.includes(info.diff.oldValue)) {
+          ids.push(info.diff.oldValue);
         }
         return true;
       }
       return false;
     },
   });
-
-  const isAppRoot =  !elementToInjectInto.getAttribute(getComponentIdDataSetName());
 
   const getState = () => {
     return { ...getStateForComponent(rootEl) };
@@ -49,6 +49,8 @@ function _use(
       elementToInjectInto,
       template,
       newState,
+      appId,
+      myUse,
       false,
       rootEl
     );
@@ -74,23 +76,36 @@ function _use(
 
   const rootEl = template({
     _: elementToInjectInto,
-    elements: elements(state, oldRoot, regenerateState),
+    elements: elements(state, oldRoot, regenerateState, appId, myUse, template),
     setState,
     getState,
-    stateFor
-  });
+    stateFor,
+  }).el;
   if (shouldRenderEl) {
     elementToInjectInto.appendChild(rootEl);
   }
   return rootEl;
 }
 
-function use(
+const useCreator = (appId: string, rootEl: HTMLElement) => {
+  return function use(
+    elementToInjectInto: ElementWrapper,
+    template: Template,
+    state: State = {},
+  ) {
+    _use(elementToInjectInto.el, template, state, appId, use, true, undefined);
+  };
+};
+
+function App(
   elementToInjectInto: HTMLElement,
   template: Template,
   state: State = {}
 ) {
-  _use(elementToInjectInto, template, state, true);
+  const appId = uid()
+  const myUse = useCreator(appId, elementToInjectInto);
+  const appWrapper = createElementWrapper(elementToInjectInto, myUse, appId, template, state)
+  myUse(appWrapper, template, state)
 }
 
-export { use };
+export { App, useCreator };

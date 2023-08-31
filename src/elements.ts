@@ -1,6 +1,7 @@
 import { allHtmlElements } from "./all-html-elements";
 import { allListeners } from "./all-listeners";
 import { register, ensureComponentId } from "./register";
+import { useCreator } from "./use";
 
 function handleOptions(
   options: ElementOptions,
@@ -27,7 +28,7 @@ function handleOptions(
         element.innerText = func(state[variable]);
       } else if (Object.getPrototypeOf(value) === Object.prototype) {
         const keys = Object.keys(value);
-        const variable = keys[0]
+        const variable = keys[0];
         const func = value[variable];
         if (keys.length > 1 || typeof func !== "function") {
           throw new Error(
@@ -61,16 +62,19 @@ function handleOptions(
 const elements = (
   state: State,
   oldRoot: undefined | HTMLElement,
-  regenerate: any
+  regenerate: any,
+  appId: string,
+  myUse: UseFunction,
+  template: Template
 ) => {
   const obj = {};
   let nesting = 0;
   let nestingArr: number[] = [];
   let nestedEls: HTMLElement[] = [];
   let lastEl: HTMLElement;
-  allHtmlElements().forEach((el) => {
+  allHtmlElements().forEach(el => {
     //@ts-ignore
-    obj[el] = (options, callback) => {
+    obj[el] = (options, callback): ElementWrapper => {
       if (callback && typeof callback !== "function") {
         throw new Error(
           `Expected callback for ${el} to be a function, but its type was: ${typeof callback}`
@@ -101,14 +105,36 @@ const elements = (
         lastEl.appendChild(element);
       }
       handleOptions(options, element, state);
+      const wrapper = createElementWrapper(element, myUse, appId, template, state);
       if (typeof callback === "function") {
-        callback(element);
+        callback(wrapper);
         nesting -= 1;
       }
-      return element;
+      return wrapper;
     };
   });
   return obj as ElementList;
 };
 
-export { elements };
+const createElementWrapper = (
+  el: HTMLElement,
+  use: UseFunction,
+  appId: string,
+  template: Template,
+  state: State
+): ElementWrapper => {
+  function Wrapper (
+    el: HTMLElement,
+    use: UseFunction,
+    appId: string,
+  ) {
+    this.el = el;
+    this.use = useCreator(appId, el);
+    this.appId = appId;
+    this.onmount = (f: Function) => setTimeout(() => f(el))
+  }
+  const wrapper = new Wrapper(el, use, appId);
+  return wrapper;
+};
+
+export { elements, createElementWrapper };

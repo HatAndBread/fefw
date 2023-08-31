@@ -10,7 +10,7 @@ export function anotherComponent({ setState, elements }: TemplateOptions) {
     form({}, _ => {
       input(
         { text: "I am a component", oninput: handleInput, value: () => "name" },
-        _ => setTimeout(() => _.focus())
+        _ => _.onmount(_ => _.focus())
       );
       p({ text: () => "name" });
     });

@@ -1,5 +1,4 @@
 import { anotherComponent } from "./another-component";
-import { use } from "../use";
 
 export function exampleComponent({
   setState,
@@ -15,6 +14,6 @@ export function exampleComponent({
 
   return div({ text: "I am a component", class: "bg-yellow" }, _ => {
     button({ text: () => "count", onclick: handleButtonClick });
-    use(_, anotherComponent, { name: "fred" });
+    _.use(_, anotherComponent, { name: "fred" });
   });
 }

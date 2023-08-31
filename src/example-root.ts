@@ -5,7 +5,7 @@ const app = document.getElementById("app") as HTMLElement;
 
 use(app, template, { count: 0 });
 
-function template({ _, setState, stateFor, elements, onmount }: TemplateOptions) {
+function template({ _, setState, stateFor, elements }: TemplateOptions) {
   const { div, button } = elements;
 
   const handleButtonClick = () => {

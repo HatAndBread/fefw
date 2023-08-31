@@ -5,21 +5,10 @@ import {
   regenerateComponent,
   cleanUpRegisteredComponents,
   getChildComponents,
+  getIdForComponent,
 } from "./register";
 import { getStateForComponent, setStateForComponent } from "./state";
 import { elements } from "./elements";
-
-const dd = new DiffDOM({
-  preDiffApply: info => {
-    if (
-      info.diff.action === "modifyAttribute" &&
-      info.diff.name === getComponentIdDataSetName()
-    ) {
-      return true;
-    }
-    return false;
-  },
-});
 
 function _use(
   elementToInjectInto: HTMLElement,
@@ -28,14 +17,25 @@ function _use(
   shouldRenderEl?: boolean,
   oldRoot?: HTMLElement
 ) {
-  const onmountFunctions: Function[] = [];
-  const triggerOnmount = () => {
-    // todo: only push if the next component is the top component.
-    onmountFunctions.forEach(f => f());
-  };
-  const onmount = (f: Function) => {
-    onmountFunctions.push(() => setTimeout(() => f()));
-  };
+  const ids: string[] = [];
+
+  const dd = new DiffDOM({
+    preDiffApply: info => {
+      if (
+        info.diff.action === "modifyAttribute" &&
+        info.diff.name === getComponentIdDataSetName()
+      ) {
+        if (!ids.includes(info.diff.oldValue)){
+          ids.push(info.diff.oldValue)
+        }
+        return true;
+      }
+      return false;
+    },
+  });
+
+  const isAppRoot =  !elementToInjectInto.getAttribute(getComponentIdDataSetName());
+
   const getState = () => {
     return { ...getStateForComponent(rootEl) };
   };
@@ -77,12 +77,10 @@ function _use(
     elements: elements(state, oldRoot, regenerateState),
     setState,
     getState,
-    stateFor,
-    onmount,
+    stateFor
   });
   if (shouldRenderEl) {
     elementToInjectInto.appendChild(rootEl);
-    triggerOnmount()
   }
   return rootEl;
 }

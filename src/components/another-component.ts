@@ -1,8 +1,4 @@
-export function anotherComponent({
-  setState,
-  elements,
-  onmount,
-}: TemplateOptions) {
+export function anotherComponent({ setState, elements }: TemplateOptions) {
   const { div, input, p, form } = elements;
 
   const handleInput = (e: Event) => {
@@ -14,10 +10,7 @@ export function anotherComponent({
     form({}, _ => {
       input(
         { text: "I am a component", oninput: handleInput, value: () => "name" },
-        _ => onmount(()=> {
-          console.log("mountin!")
-          _.focus()
-        })
+        _ => setTimeout(() => _.focus())
       );
       p({ text: () => "name" });
     });

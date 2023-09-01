@@ -9,17 +9,13 @@ const getId = (el: HTMLElement) => {
   return id;
 }
 
-function getStateForComponent(el: HTMLElement) {
-  return registeredComponents()[getId(el)].state
+function getStateForComponent(el: HTMLElement, appId: string) {
+  return registeredComponents()[appId][getId(el)].state
 }
 
-function getStateForComponentWithoutError(el: HTMLElement) {
-  return registeredComponents()[getComponentIdDataSetName()]?.state
+function setStateForComponent(el: HTMLElement, key: string, value: any, appId: string) {
+  registeredComponents()[appId][getId(el)].state[key] = value;
+  return registeredComponents()[appId][getId(el)].state
 }
 
-function setStateForComponent(el: HTMLElement, key: string, value: any) {
-  registeredComponents()[getId(el)].state[key] = value;
-  return registeredComponents()[getId(el)].state
-}
-
-export {getStateForComponent, setStateForComponent, getStateForComponentWithoutError}
+export {getStateForComponent, setStateForComponent}

@@ -33,11 +33,11 @@ function _use(
   firstRender?: true,
 ) {
   const getState = () => {
-    if (oldRoot) return { ...getStateForComponent(oldRoot) };
+    if (oldRoot) return { ...getStateForComponent(oldRoot, appId) };
     return state
   };
   const stateFor = (key: string) => {
-    if (oldRoot) return getStateForComponent(oldRoot)[key];
+    if (oldRoot) return getStateForComponent(oldRoot, appId)[key];
     return state[key]
   };
   const regenerateState = (newState: State) => {
@@ -60,15 +60,15 @@ function _use(
     }
     if (shouldRenderEl) {
       // This is the end of the process for components that get mounted
-      cleanUpRegisteredComponents();
+      cleanUpRegisteredComponents(appId);
     }
   };
 
   const setState: SetState = (s: string, value: any) => {
-    const newState = setStateForComponent(rootEl, s, value);
+    const newState = setStateForComponent(rootEl, s, value, appId);
     regenerateState(newState);
     getChildComponents(rootEl).forEach(e => {
-      regenerateComponent(e as HTMLElement);
+      regenerateComponent(e as HTMLElement, appId);
     });
   };
 

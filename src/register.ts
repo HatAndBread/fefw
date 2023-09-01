@@ -1,15 +1,17 @@
-import {v4 as uid} from "uuid";
+import { v4 as uid } from "uuid"
 
 const componentIdDataSetName = `data-${uid()}`
 
-const getComponentIdDataSetName = () => componentIdDataSetName;
+const getComponentIdDataSetName = () => componentIdDataSetName
 
 function getIdForComponent(el: HTMLElement) {
   const id = el.getAttribute(componentIdDataSetName)
   if (!id) {
-    throw new Error(`Expected old element to have a uid but it did not: ${el.outerHTML}`)
+    throw new Error(
+      `Expected old element to have a uid but it did not: ${el.outerHTML}`
+    )
   }
-  return id;
+  return id
 }
 
 function setIdForComponent(el: HTMLElement, id: string) {
@@ -21,23 +23,15 @@ function ensureComponentId(oldEl: HTMLElement, newEl: HTMLElement) {
   setIdForComponent(newEl, id)
 }
 
-type RegisteredComponents = {
-  [key: string]: {
-    timesRendered: number,
-    state: {[key: string]: any},
-    regenerate: any
-  }
-}
-
 const _registeredComponents: RegisteredComponents = {}
-const registeredComponents = () => _registeredComponents
 
-function regenerateComponent(el: HTMLElement) {
-  _registeredComponents[getIdForComponent(el)].regenerate()
+const registeredComponents = () => _registeredComponents;
+// const registeredComponents = () => _newRegisteredComponents
+function regenerateComponent(el: HTMLElement, appId: string) {
+  _registeredComponents[appId][getIdForComponent(el)].regenerate()
 }
-
-function getStateById(id: string) {
-  return _registeredComponents[id]?.state
+const getStateById = (id: string, appId: string) => {
+  return _registeredComponents[appId][id]?.state
 }
 
 function registerComponentId(rootElement: HTMLElement) {
@@ -45,32 +39,45 @@ function registerComponentId(rootElement: HTMLElement) {
   if (!id) {
     id = uid()
     rootElement.setAttribute(componentIdDataSetName, id)
-  };
-  return id;
+  }
+  return id
 }
 
-function register(rootElement: HTMLElement, state: State, regenerate: any) {
-  if (rootElement.getAttribute(componentIdDataSetName)) return;
+function register(rootElement: HTMLElement, state: State, regenerate: any, appId: string) {
+  if (rootElement.getAttribute(componentIdDataSetName)) return
 
   const id = registerComponentId(rootElement)
-  _registeredComponents[id] ||= {timesRendered: 0, state, regenerate}
-  _registeredComponents[id].timesRendered += 1;
-  return _registeredComponents[id].timesRendered === 1
+  _registeredComponents[appId] ||= {}
+  _registeredComponents[appId][id] ||= { state, regenerate }
 }
 
 function getChildComponents(el: HTMLElement) {
   return el.querySelectorAll(`[${getComponentIdDataSetName()}]`)
 }
 
-function cleanUpRegisteredComponents() {
-  const validIds = Array.from(getChildComponents(document.body)).map((el) => getIdForComponent(el as HTMLElement))
-  const registerKeys = Object.keys(_registeredComponents)
+function cleanUpRegisteredComponents(appId: string) {
+  // Todo: Instead of whole body only search the current app.
+  const validIds = Array.from(getChildComponents(document.body)).map(el =>
+    getIdForComponent(el as HTMLElement)
+  )
+  const registerKeys = Object.keys(_registeredComponents[appId])
   for (let i = 0; i < registerKeys.length; i++) {
-    const key = registerKeys[i];
+    const key = registerKeys[i]
     if (!validIds.includes(key)) {
-      delete _registeredComponents[key]
+      delete _registeredComponents[appId][key]
     }
   }
 }
 
-export {register, registeredComponents, getComponentIdDataSetName, getIdForComponent, setIdForComponent, ensureComponentId, getStateById, regenerateComponent, getChildComponents, cleanUpRegisteredComponents}
+export {
+  register,
+  registeredComponents,
+  getComponentIdDataSetName,
+  getIdForComponent,
+  setIdForComponent,
+  ensureComponentId,
+  getStateById,
+  regenerateComponent,
+  getChildComponents,
+  cleanUpRegisteredComponents,
+}

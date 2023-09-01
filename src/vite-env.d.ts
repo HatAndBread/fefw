@@ -22,6 +22,18 @@ interface TemplateOptions {
   _: HTMLElement;
 }
 
+interface RegisteredComponents {
+  //App id
+  [key: string]: {
+    //Component id
+    [key: string]: {
+      // State
+      [key: string]: any
+    }
+  }
+}
+
+
 type Template = ({
   setState,
   getState,

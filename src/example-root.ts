@@ -6,7 +6,6 @@ const app = document.getElementById("app") as HTMLElement
 App(app, ApplicationRoot, { count: 0 })
 
 function ApplicationRoot({
-  _,
   setState,
   stateFor,
   getState,

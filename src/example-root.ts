@@ -6,6 +6,7 @@ const app = document.getElementById("app") as HTMLElement
 App(app, ApplicationRoot, { count: 0 })
 
 function ApplicationRoot({
+  _,
   setState,
   stateFor,
   getState,
@@ -39,7 +40,10 @@ function ApplicationRoot({
           div({ text: count })
         }
       })
-      _.use(exampleComponent, { count: 22 })
+      _.use(exampleComponent, { count: 22 }, {
+        slot1: (_) => _.div({text: `I am a slot and the count is ${count}`}),
+        slot2: (_) => _.div({text: `I am also a slot!`}),
+      })
     })
     div({ text: "last" })
   })

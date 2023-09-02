@@ -66,7 +66,8 @@ const elements = (
   appId: string,
   firstRender?: true
 ) => {
-  const obj = {}
+  const obj = {} as ElementList;
+  obj.get = (key: string) => obj[key]
   let nesting = 0
   let nestingArr: number[] = []
   let nestedEls: HTMLElement[] = []
@@ -104,7 +105,7 @@ const elements = (
         lastEl.appendChild(element)
       }
       handleOptions(options, element, state)
-      const wrapper = createElementWrapper(element, appId)
+      const wrapper = createElementWrapper(element, appId, obj)
       if (typeof callback === "function") {
         callback(wrapper)
         nesting -= 1
@@ -112,19 +113,24 @@ const elements = (
       return wrapper
     }
   })
-  return obj as ElementList
+  return obj;
 }
 
 const createElementWrapper = (
   el: HTMLElement,
-  appId: string
+  appId: string,
+  elementList: ElementList
 ): ElementWrapper => {
-  return {
+  const wrapper = {
     el,
     appId,
     use: useCreator(appId, el),
-    onmount: (f: Function) => setTimeout(() => f(el)),
+    onmount: (f: Function) => setTimeout(() => f(el))
   }
+  allHtmlElements().forEach((elementName) => {
+    wrapper[elementName] = () => elementList.get(elementName)
+  })
+  return wrapper as unknown as ElementWrapper;
 }
 
 export { elements, createElementWrapper }

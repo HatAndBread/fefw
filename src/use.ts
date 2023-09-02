@@ -31,6 +31,7 @@ function _use(
   shouldRenderEl?: boolean,
   oldRoot?: HTMLElement,
   firstRender?: true,
+  slots?: SlotList
 ) {
   const getState = () => {
     if (oldRoot) return { ...getStateForComponent(oldRoot, appId) };
@@ -50,7 +51,9 @@ function _use(
       appId,
       myUse,
       false,
-      rootEl
+      rootEl,
+      undefined,
+      slots
     );
     const diff = dd.diff(rootEl, newRootEl);
     const wasAbleToApplyDiff = dd.apply(rootEl, diff);
@@ -78,6 +81,7 @@ function _use(
     setState,
     getState,
     stateFor,
+    slots: slots as SlotList
   }).el;
   if (shouldRenderEl) {
     elementToInjectInto.appendChild(rootEl);
@@ -89,8 +93,9 @@ const useCreator = (appId: string, el: HTMLElement, firstRender?: true) => {
   return function use(
     template: Template,
     state: State = {},
+    slots?: SlotList
   ) {
-    _use(el, template, state, appId, use, true, undefined, firstRender);
+    _use(el, template, state, appId, use, true, undefined, firstRender, slots);
   };
 };
 

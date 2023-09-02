@@ -1,25 +1,146 @@
 /// <reference types="vite/client" />
 
-type SetState = (identifier: string, value: any) => void;
-type GetState = () => State;
-type StateFor = (identifier: string) => any;
+type SetState = (identifier: string, value: any) => void
+type GetState = () => State
+type StateFor = (identifier: string) => any
 
 type UseFunction = (
   template: Template,
-  state: State = {}
-) => void;
+  state: State = {},
+  slotList?: SlotList
+) => void
 interface ElementWrapper {
-  el: HTMLElement;
-  onmount: (f: (el: HTMLElement) => any) => any;
-  use: UseFunction;
-  appId: string;
+  el: HTMLElement
+  onmount: (f: (el: HTMLElement) => any) => any
+  use: UseFunction
+  appId: string
+  a: ElementFunction
+  abbr: ElementFunction
+  acronym: ElementFunction
+  address: ElementFunction
+  applet: ElementFunction
+  area: ElementFunction
+  article: ElementFunction
+  aside: ElementFunction
+  audio: ElementFunction
+  b: ElementFunction
+  base: ElementFunction
+  basefont: ElementFunction
+  bdi: ElementFunction
+  bdo: ElementFunction
+  big: ElementFunction
+  blockquote: ElementFunction
+  body: ElementFunction
+  br: ElementFunction
+  button: ElementFunction
+  canvas: ElementFunction
+  caption: ElementFunction
+  center: ElementFunction
+  cite: ElementFunction
+  code: ElementFunction
+  col: ElementFunction
+  colgroup: ElementFunction
+  data: ElementFunction
+  datalist: ElementFunction
+  dd: ElementFunction
+  del: ElementFunction
+  details: ElementFunction
+  dfn: ElementFunction
+  dialog: ElementFunction
+  dir: ElementFunction
+  div: ElementFunction
+  dl: ElementFunction
+  dt: ElementFunction
+  em: ElementFunction
+  embed: ElementFunction
+  fieldset: ElementFunction
+  figcaption: ElementFunction
+  figure: ElementFunction
+  font: ElementFunction
+  footer: ElementFunction
+  form: ElementFunction
+  frame: ElementFunction
+  frameset: ElementFunction
+  h1: ElementFunction
+  to: ElementFunction
+  h6: ElementFunction
+  head: ElementFunction
+  header: ElementFunction
+  hr: ElementFunction
+  html: ElementFunction
+  i: ElementFunction
+  iframe: ElementFunction
+  img: ElementFunction
+  input: ElementFunction
+  ins: ElementFunction
+  kbd: ElementFunction
+  label: ElementFunction
+  legend: ElementFunction
+  li: ElementFunction
+  link: ElementFunction
+  main: ElementFunction
+  map: ElementFunction
+  mark: ElementFunction
+  meta: ElementFunction
+  meter: ElementFunction
+  nav: ElementFunction
+  noframes: ElementFunction
+  noscript: ElementFunction
+  object: ElementFunction
+  ol: ElementFunction
+  optgroup: ElementFunction
+  option: ElementFunction
+  output: ElementFunction
+  p: ElementFunction
+  param: ElementFunction
+  picture: ElementFunction
+  pre: ElementFunction
+  progress: ElementFunction
+  q: ElementFunction
+  rp: ElementFunction
+  rt: ElementFunction
+  ruby: ElementFunction
+  s: ElementFunction
+  samp: ElementFunction
+  script: ElementFunction
+  section: ElementFunction
+  select: ElementFunction
+  small: ElementFunction
+  source: ElementFunction
+  span: ElementFunction
+  strike: ElementFunction
+  strong: ElementFunction
+  style: ElementFunction
+  sub: ElementFunction
+  summary: ElementFunction
+  sup: ElementFunction
+  svg: ElementFunction
+  table: ElementFunction
+  tbody: ElementFunction
+  td: ElementFunction
+  template: ElementFunction
+  textarea: ElementFunction
+  tfoot: ElementFunction
+  th: ElementFunction
+  thead: ElementFunction
+  time: ElementFunction
+  title: ElementFunction
+  tr: ElementFunction
+  track: ElementFunction
+  tt: ElementFunction
+  u: ElementFunction
+  ul: ElementFunction
+  var: ElementFunction
+  video: ElementFunction
+  wbr: ElementFunction
 }
 interface TemplateOptions {
-  setState: SetState;
-  getState: GetState;
-  stateFor: any;
-  elements: ElementList;
-  _: HTMLElement;
+  setState: SetState
+  getState: GetState
+  stateFor: any
+  slots: SlotList
+  elements: ElementList
+  _: HTMLElement
 }
 
 interface RegisteredComponents {
@@ -33,146 +154,150 @@ interface RegisteredComponents {
   }
 }
 
+interface SlotList {
+  [key: string]: (_: ElementWrapper) => ElementWrapper
+}
 
 type Template = ({
   setState,
   getState,
   stateFor,
   elements,
-}: TemplateOptions) => ElementWrapper;
+}: TemplateOptions) => ElementWrapper
 
 interface State {
-  [key: string]: any;
+  [key: string]: any
 }
 
-type ElementOptions = { [key: string]: any };
+type ElementOptions = { [key: string]: any }
 
 type ElementFunction = (
   options: ElementOptions,
   callback?: (_: ElementWrapper) => void
-) => ElementWrapper;
+) => ElementWrapper
 type ElementList = {
-  a: ElementFunction;
-  abbr: ElementFunction;
-  acronym: ElementFunction;
-  address: ElementFunction;
-  applet: ElementFunction;
-  area: ElementFunction;
-  article: ElementFunction;
-  aside: ElementFunction;
-  audio: ElementFunction;
-  b: ElementFunction;
-  base: ElementFunction;
-  basefont: ElementFunction;
-  bdi: ElementFunction;
-  bdo: ElementFunction;
-  big: ElementFunction;
-  blockquote: ElementFunction;
-  body: ElementFunction;
-  br: ElementFunction;
-  button: ElementFunction;
-  canvas: ElementFunction;
-  caption: ElementFunction;
-  center: ElementFunction;
-  cite: ElementFunction;
-  code: ElementFunction;
-  col: ElementFunction;
-  colgroup: ElementFunction;
-  data: ElementFunction;
-  datalist: ElementFunction;
-  dd: ElementFunction;
-  del: ElementFunction;
-  details: ElementFunction;
-  dfn: ElementFunction;
-  dialog: ElementFunction;
-  dir: ElementFunction;
-  div: ElementFunction;
-  dl: ElementFunction;
-  dt: ElementFunction;
-  em: ElementFunction;
-  embed: ElementFunction;
-  fieldset: ElementFunction;
-  figcaption: ElementFunction;
-  figure: ElementFunction;
-  font: ElementFunction;
-  footer: ElementFunction;
-  form: ElementFunction;
-  frame: ElementFunction;
-  frameset: ElementFunction;
-  h1: ElementFunction;
-  to: ElementFunction;
-  h6: ElementFunction;
-  head: ElementFunction;
-  header: ElementFunction;
-  hr: ElementFunction;
-  html: ElementFunction;
-  i: ElementFunction;
-  iframe: ElementFunction;
-  img: ElementFunction;
-  input: ElementFunction;
-  ins: ElementFunction;
-  kbd: ElementFunction;
-  label: ElementFunction;
-  legend: ElementFunction;
-  li: ElementFunction;
-  link: ElementFunction;
-  main: ElementFunction;
-  map: ElementFunction;
-  mark: ElementFunction;
-  meta: ElementFunction;
-  meter: ElementFunction;
-  nav: ElementFunction;
-  noframes: ElementFunction;
-  noscript: ElementFunction;
-  object: ElementFunction;
-  ol: ElementFunction;
-  optgroup: ElementFunction;
-  option: ElementFunction;
-  output: ElementFunction;
-  p: ElementFunction;
-  param: ElementFunction;
-  picture: ElementFunction;
-  pre: ElementFunction;
-  progress: ElementFunction;
-  q: ElementFunction;
-  rp: ElementFunction;
-  rt: ElementFunction;
-  ruby: ElementFunction;
-  s: ElementFunction;
-  samp: ElementFunction;
-  script: ElementFunction;
-  section: ElementFunction;
-  select: ElementFunction;
-  small: ElementFunction;
-  source: ElementFunction;
-  span: ElementFunction;
-  strike: ElementFunction;
-  strong: ElementFunction;
-  style: ElementFunction;
-  sub: ElementFunction;
-  summary: ElementFunction;
-  sup: ElementFunction;
-  svg: ElementFunction;
-  table: ElementFunction;
-  tbody: ElementFunction;
-  td: ElementFunction;
-  template: ElementFunction;
-  textarea: ElementFunction;
-  tfoot: ElementFunction;
-  th: ElementFunction;
-  thead: ElementFunction;
-  time: ElementFunction;
-  title: ElementFunction;
-  tr: ElementFunction;
-  track: ElementFunction;
-  tt: ElementFunction;
-  u: ElementFunction;
-  ul: ElementFunction;
-  var: ElementFunction;
-  video: ElementFunction;
-  wbr: ElementFunction;
-  [key: PossibleHTMLElements]: ElementFunction;
-};
+  a: ElementFunction
+  abbr: ElementFunction
+  acronym: ElementFunction
+  address: ElementFunction
+  applet: ElementFunction
+  area: ElementFunction
+  article: ElementFunction
+  aside: ElementFunction
+  audio: ElementFunction
+  b: ElementFunction
+  base: ElementFunction
+  basefont: ElementFunction
+  bdi: ElementFunction
+  bdo: ElementFunction
+  big: ElementFunction
+  blockquote: ElementFunction
+  body: ElementFunction
+  br: ElementFunction
+  button: ElementFunction
+  canvas: ElementFunction
+  caption: ElementFunction
+  center: ElementFunction
+  cite: ElementFunction
+  code: ElementFunction
+  col: ElementFunction
+  colgroup: ElementFunction
+  data: ElementFunction
+  datalist: ElementFunction
+  dd: ElementFunction
+  del: ElementFunction
+  details: ElementFunction
+  dfn: ElementFunction
+  dialog: ElementFunction
+  dir: ElementFunction
+  div: ElementFunction
+  dl: ElementFunction
+  dt: ElementFunction
+  em: ElementFunction
+  embed: ElementFunction
+  fieldset: ElementFunction
+  figcaption: ElementFunction
+  figure: ElementFunction
+  font: ElementFunction
+  footer: ElementFunction
+  form: ElementFunction
+  frame: ElementFunction
+  frameset: ElementFunction
+  h1: ElementFunction
+  to: ElementFunction
+  h6: ElementFunction
+  head: ElementFunction
+  header: ElementFunction
+  hr: ElementFunction
+  html: ElementFunction
+  i: ElementFunction
+  iframe: ElementFunction
+  img: ElementFunction
+  input: ElementFunction
+  ins: ElementFunction
+  kbd: ElementFunction
+  label: ElementFunction
+  legend: ElementFunction
+  li: ElementFunction
+  link: ElementFunction
+  main: ElementFunction
+  map: ElementFunction
+  mark: ElementFunction
+  meta: ElementFunction
+  meter: ElementFunction
+  nav: ElementFunction
+  noframes: ElementFunction
+  noscript: ElementFunction
+  object: ElementFunction
+  ol: ElementFunction
+  optgroup: ElementFunction
+  option: ElementFunction
+  output: ElementFunction
+  p: ElementFunction
+  param: ElementFunction
+  picture: ElementFunction
+  pre: ElementFunction
+  progress: ElementFunction
+  q: ElementFunction
+  rp: ElementFunction
+  rt: ElementFunction
+  ruby: ElementFunction
+  s: ElementFunction
+  samp: ElementFunction
+  script: ElementFunction
+  section: ElementFunction
+  select: ElementFunction
+  small: ElementFunction
+  source: ElementFunction
+  span: ElementFunction
+  strike: ElementFunction
+  strong: ElementFunction
+  style: ElementFunction
+  sub: ElementFunction
+  summary: ElementFunction
+  sup: ElementFunction
+  svg: ElementFunction
+  table: ElementFunction
+  tbody: ElementFunction
+  td: ElementFunction
+  template: ElementFunction
+  textarea: ElementFunction
+  tfoot: ElementFunction
+  th: ElementFunction
+  thead: ElementFunction
+  time: ElementFunction
+  title: ElementFunction
+  tr: ElementFunction
+  track: ElementFunction
+  tt: ElementFunction
+  u: ElementFunction
+  ul: ElementFunction
+  var: ElementFunction
+  video: ElementFunction
+  wbr: ElementFunction
+  get: (key: string) => ElementFunction
+  [key: PossibleHTMLElements]: ElementFunction
+}
 
 type PossibleHTMLElements =
   | "a"
@@ -293,4 +418,4 @@ type PossibleHTMLElements =
   | "ul"
   | "var"
   | "video"
-  | "wbr";
+  | "wbr"

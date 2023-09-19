@@ -10,17 +10,28 @@ import { getStateForComponent, setStateForComponent } from "./state";
 import { elements } from "./elements";
 import { v4 as uid } from "uuid";
 
-const dd = new DiffDOM({
-  preDiffApply: info => {
-    if (
-      info.diff.action === "modifyAttribute" &&
-      info.diff.name === getComponentIdDataSetName()
-    ) {
-      return true;
-    }
-    return false;
-  },
-});
+
+const differ = (rootEl, newRootEl, mySlots: HTMLElement[]) => {
+  const dd = new DiffDOM({
+    preDiffApply: info => {
+      // Slots must be updated from their parent components
+      let slot = info.node?.dataset?.slot || info.node?.parentNode?.dataset?.slot
+      if (slot && mySlots.includes(info.node.dataset?.slot ? info.node : info.node.parentNode)) {
+        return true
+      }
+      if (
+        info.diff.action === "modifyAttribute" &&
+        info.diff.name === getComponentIdDataSetName()
+      ) {
+        return true;
+      }
+      return false;
+    },
+  });
+
+  const diff = dd.diff(rootEl, newRootEl)
+  return dd.apply(rootEl, diff)
+}
 
 function _use(
   elementToInjectInto: HTMLElement,
@@ -42,7 +53,6 @@ function _use(
     return state[key]
   };
   const regenerateState = (newState: State) => {
-    // Todo: Only diff current component, not children
     newState ||= state;
     const newRootEl = _use(
       elementToInjectInto,
@@ -55,34 +65,48 @@ function _use(
       undefined,
       slots
     );
-    const diff = dd.diff(rootEl, newRootEl);
-    const wasAbleToApplyDiff = dd.apply(rootEl, diff);
+    const wasAbleToApplyDiff = differ(rootEl, newRootEl, mySlots);
     if (!wasAbleToApplyDiff) {
+      console.warn("Was not able to apply diff!")
       ensureComponentId(rootEl, newRootEl);
       elementToInjectInto.replaceChild(rootEl, newRootEl);
     }
     if (shouldRenderEl) {
       // This is the end of the process for components that get mounted
+      newRootEl.remove()
       cleanUpRegisteredComponents(appId);
     }
   };
 
-  const setState: SetState = (s: string, value: any) => {
-    const newState = setStateForComponent(rootEl, s, value, appId);
+  const setState: SetState = (state: State) => {
+    const newState = setStateForComponent(rootEl, state, appId);
     regenerateState(newState);
     getChildComponents(rootEl).forEach(e => {
       regenerateComponent(e as HTMLElement, appId);
     });
   };
 
-  const rootEl = template({
+  const elFuncs = elements(state, oldRoot, regenerateState, appId, firstRender)
+  const mySlots: HTMLElement[] = []
+  const slot = (key: string) => {
+    if (!slots) return
+    const result = slots[key](elFuncs as unknown as TemplateOptions)
+    mySlots.push(result.el)
+    result.el.dataset.slot = "1"
+    result.el.querySelectorAll("*").forEach((el) => el.dataset.slot = "1")
+  }
+
+  const templateThis = {
     _: elementToInjectInto,
-    elements: elements(state, oldRoot, regenerateState, appId, firstRender),
+    ...elFuncs,
     setState,
     getState,
     stateFor,
-    slots: slots as SlotList
-  }).el;
+    slots: slots as SlotList,
+    slot
+  }
+  template.bind(templateThis)
+  const rootEl = template.call(templateThis).el;
   if (shouldRenderEl) {
     elementToInjectInto.appendChild(rootEl);
   }

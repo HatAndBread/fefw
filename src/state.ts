@@ -13,8 +13,10 @@ function getStateForComponent(el: HTMLElement, appId: string) {
   return registeredComponents()[appId][getId(el)].state
 }
 
-function setStateForComponent(el: HTMLElement, key: string, value: any, appId: string) {
-  registeredComponents()[appId][getId(el)].state[key] = value;
+function setStateForComponent(el: HTMLElement, stateObject: State, appId: string) {
+  Object.entries(stateObject).forEach(([key, value]) => {
+    registeredComponents()[appId][getId(el)].state[key] = value;
+  })
   return registeredComponents()[appId][getId(el)].state
 }
 

@@ -1,9 +1,10 @@
 /// <reference types="vite/client" />
 
-type SetState = (identifier: string, value: any) => void
+type SetState = (state: State) => void
 type GetState = () => State
 type StateFor = (identifier: string) => any
 
+type SlotFunc = (key: string) => void
 type UseFunction = (
   template: Template,
   state: State = {},
@@ -14,6 +15,134 @@ interface ElementWrapper {
   onmount: (f: (el: HTMLElement) => any) => any
   use: UseFunction
   appId: string
+  a: ElementFunction
+  abbr: ElementFunction
+  acronym: ElementFunction
+  address: ElementFunction
+  applet: ElementFunction
+  area: ElementFunction
+  article: ElementFunction
+  aside: ElementFunction
+  audio: ElementFunction
+  b: ElementFunction
+  base: ElementFunction
+  basefont: ElementFunction
+  bdi: ElementFunction
+  bdo: ElementFunction
+  big: ElementFunction
+  blockquote: ElementFunction
+  body: ElementFunction
+  br: ElementFunction
+  button: ElementFunction
+  canvas: ElementFunction
+  caption: ElementFunction
+  center: ElementFunction
+  cite: ElementFunction
+  code: ElementFunction
+  col: ElementFunction
+  colgroup: ElementFunction
+  data: ElementFunction
+  datalist: ElementFunction
+  dd: ElementFunction
+  del: ElementFunction
+  details: ElementFunction
+  dfn: ElementFunction
+  dialog: ElementFunction
+  dir: ElementFunction
+  div: ElementFunction
+  dl: ElementFunction
+  dt: ElementFunction
+  em: ElementFunction
+  embed: ElementFunction
+  fieldset: ElementFunction
+  figcaption: ElementFunction
+  figure: ElementFunction
+  font: ElementFunction
+  footer: ElementFunction
+  form: ElementFunction
+  frame: ElementFunction
+  frameset: ElementFunction
+  h1: ElementFunction
+  to: ElementFunction
+  h6: ElementFunction
+  head: ElementFunction
+  header: ElementFunction
+  hr: ElementFunction
+  html: ElementFunction
+  i: ElementFunction
+  iframe: ElementFunction
+  img: ElementFunction
+  input: ElementFunction
+  ins: ElementFunction
+  kbd: ElementFunction
+  label: ElementFunction
+  legend: ElementFunction
+  li: ElementFunction
+  link: ElementFunction
+  main: ElementFunction
+  map: ElementFunction
+  mark: ElementFunction
+  meta: ElementFunction
+  meter: ElementFunction
+  nav: ElementFunction
+  noframes: ElementFunction
+  noscript: ElementFunction
+  object: ElementFunction
+  ol: ElementFunction
+  optgroup: ElementFunction
+  option: ElementFunction
+  output: ElementFunction
+  p: ElementFunction
+  param: ElementFunction
+  picture: ElementFunction
+  pre: ElementFunction
+  progress: ElementFunction
+  q: ElementFunction
+  rp: ElementFunction
+  rt: ElementFunction
+  ruby: ElementFunction
+  s: ElementFunction
+  samp: ElementFunction
+  script: ElementFunction
+  section: ElementFunction
+  select: ElementFunction
+  small: ElementFunction
+  source: ElementFunction
+  span: ElementFunction
+  strike: ElementFunction
+  strong: ElementFunction
+  style: ElementFunction
+  sub: ElementFunction
+  summary: ElementFunction
+  sup: ElementFunction
+  svg: ElementFunction
+  table: ElementFunction
+  tbody: ElementFunction
+  td: ElementFunction
+  template: ElementFunction
+  text: (text: string | number) => void
+  textarea: ElementFunction
+  tfoot: ElementFunction
+  th: ElementFunction
+  thead: ElementFunction
+  time: ElementFunction
+  title: ElementFunction
+  tr: ElementFunction
+  track: ElementFunction
+  tt: ElementFunction
+  u: ElementFunction
+  ul: ElementFunction
+  var: ElementFunction
+  video: ElementFunction
+  wbr: ElementFunction
+}
+interface TemplateOptions {
+  setState: SetState
+  getState: GetState
+  stateFor: any
+  slot: SlotFunc
+  elements: ElementList
+  _: HTMLElement,
   a: ElementFunction
   abbr: ElementFunction
   acronym: ElementFunction
@@ -134,14 +263,6 @@ interface ElementWrapper {
   video: ElementFunction
   wbr: ElementFunction
 }
-interface TemplateOptions {
-  setState: SetState
-  getState: GetState
-  stateFor: any
-  slots: SlotList
-  elements: ElementList
-  _: HTMLElement
-}
 
 interface RegisteredComponents {
   //App id
@@ -155,15 +276,10 @@ interface RegisteredComponents {
 }
 
 interface SlotList {
-  [key: string]: (_: ElementWrapper) => ElementWrapper
+  [key: string]: (_: TemplateOptions) => ElementWrapper
 }
 
-type Template = ({
-  setState,
-  getState,
-  stateFor,
-  elements,
-}: TemplateOptions) => ElementWrapper
+type Template = () => ElementWrapper
 
 interface State {
   [key: string]: any
@@ -172,8 +288,9 @@ interface State {
 type ElementOptions = { [key: string]: any }
 
 type ElementFunction = (
-  options: ElementOptions,
-  callback?: (_: ElementWrapper) => void
+  _1?: String | Number | ElementOptions | ((_: ElementWrapper) => void),
+  _2?:  String | Number | ElementOptions | ((_: ElementWrapper) => void),
+  _3?:  String | Number | ElementOptions | ((_: ElementWrapper) => void)
 ) => ElementWrapper
 type ElementList = {
   a: ElementFunction

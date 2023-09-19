@@ -4,7 +4,6 @@ type SetState = (state: State) => void
 type GetState = () => State
 type StateFor = (identifier: string) => any
 
-type SlotFunc = (key: string) => void
 type UseFunction = (
   template: Template,
   state: State = {},
@@ -140,7 +139,7 @@ interface TemplateOptions {
   setState: SetState
   getState: GetState
   stateFor: any
-  slot: SlotFunc
+  slots: {[key: string]: (...args: any[]) => void}
   elements: ElementList
   _: HTMLElement,
   a: ElementFunction
@@ -276,7 +275,7 @@ interface RegisteredComponents {
 }
 
 interface SlotList {
-  [key: string]: (_: TemplateOptions) => ElementWrapper
+  [key: string]: (_: TemplateOptions, ...args: any[]) => ElementWrapper
 }
 
 type Template = () => ElementWrapper

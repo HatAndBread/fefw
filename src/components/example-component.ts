@@ -1,7 +1,7 @@
 import { anotherComponent } from "./another-component"
 
 export function exampleComponent(this: TemplateOptions) {
-  const { setState, stateFor, div, button, slot } = this
+  const { setState, stateFor, div, button, slots } = this
 
   const handleButtonClick = (e: Event) => {
     const currentValue = stateFor("count")
@@ -16,9 +16,9 @@ export function exampleComponent(this: TemplateOptions) {
   }
 
   return div({ text: "I am a component", style }, _ => {
-    slot("slot1")
+    slots.slot1("chicken", "choo choo")
     button(stateFor("count"), {onclick: handleButtonClick })
-    slot("slot2")
+    slots.slot2()
     _.use(anotherComponent, { name: "fred" })
   })
 }

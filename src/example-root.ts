@@ -53,7 +53,7 @@ function ApplicationRoot(this: TemplateOptions) {
         exampleComponent,
         { count: 22 },
         {
-          slot1: ({ div }) => div(`I am a slot and the count is ${count}`),
+          slot1: ({ div }, value, stuff) => div(`I am a slot and the count is ${count} and ${value} and ${stuff}`),
           slot2: ({ div }) => div(`I am also a slot!`),
         }
       )
